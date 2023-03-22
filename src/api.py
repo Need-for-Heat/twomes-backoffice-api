@@ -151,6 +151,23 @@ def account_device_activate(device_verify: DeviceVerify,
     return device
 
 
+@app.get(
+    '/account/devices',
+    response_model=list[DeviceItem],
+    responses={
+        Unauthorized.code: {'model': Unauthorized},
+    }
+)
+def devices(authorization: HTTPAuthorizationCredentials = Depends(account_auth)):
+    account_session_token = authorization.credentials
+
+    account = crud.account_by_session(db.session, account_session_token)
+    if not account:
+        return http_status(Unauthorized, 'Invalid account session token')
+
+    return crud.devices_by_account(db.session, account)
+
+
 @app.post(
     '/device',
     response_model=DeviceItem,

@@ -209,6 +209,12 @@ def device_by_name(db: Session, name: str) -> Optional[Device]:
     query = db.query(Device).filter(Device.name == name)
     return query.one_or_none()
 
+def devices_by_account(db: Session, account: Account) -> Optional[list[Device]]:
+    """
+    Get devices by account
+    """
+    return db.query(Device).filter(Device.building == account.building).all()
+
 
 def device_latest_measurement_timestamp(db: Session, device_id: int) -> datetime:
     """
